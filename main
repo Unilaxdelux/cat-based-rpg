@@ -229,13 +229,15 @@ def trap_event(player):
 
 # --- Hur spelet fungerar (Grenar) ---
 
-def branching_path(player):
+def branching_path(player, choice_1, choice_2, choice_3 = ""):
     while player.is_alive():
         print("\nChoose a path:")
-        print("1. Park")
-        print("2. Streets cuh")
-        print("3. House")
-        choice = input("Enter 1, 2, or 3: ")
+        print(f"1. {choice_1}")
+        print(f"2. {choice_2}")
+        print(f"3. {choice_3}")
+        choice = int(input("Enter 1, 2, or 3: "))
+        if  not choice in [1,2,3]:
+            continue
 
         encounter = random.choice([enemy_encounter, npc_interaction, trap_event])
         encounter(player)
