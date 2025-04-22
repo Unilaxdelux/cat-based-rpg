@@ -1,0 +1,316 @@
+import random as rand
+import time
+
+# --- Entity klasserna (Fiende, Allierade, Spelare) ---
+
+class Entity:
+    def init(self,name,description,image, max_hp,damage,speed):
+        self.name = name
+        self.description = description
+        self.image = image
+        self.max_hp = max_hp
+        self.hp = max_hp
+        self.damage = damage
+        self.speed = speed
+
+        def repr(self):
+            return self.name
+
+        def is_alive(self):
+            return self.hp > 0
+        '''
+        Checks if the entity is still alive or not
+        '''
+
+    def print_self(self):
+        print(f"Enemy: {self.name}")
+        print(self.description)
+        print(self.image)
+        print(f"Hp: {self.max_hp}")
+        print(f"Damge: {self.damage}")
+
+
+    def attack(self, target):
+        target.hp -= self.damage
+        if target.hp < 0:
+            target.hp = 0
+        print(f"{self.name} attacked {target.name}, dealing {self.damage} damage!")
+        print(f"{target.name}'s HP is now {target.hp}/{target.max_hp}")
+
+
+class Enemy(Entity):
+    def Find_target(self):
+        target = rand.randint(0,len(ally_list)-1)
+        self.Attack(target)
+
+class Ally(Entity):
+    def __init__(self, name, description, image, max_hp, damage, speed, level):
+        super().__init__(name, description, image, max_hp, damage, speed)
+        self.level = level
+
+
+
+
+
+# --- Spelare klassen ---
+
+class Player(Entity):
+    def __init__(self, name):
+        super().__init__(name, "The Hero", "(^_^)", 30, 5, 5)
+        self.inventory = []
+
+    def add_item(self, item):
+        self.inventory.append(item)
+        print(f"Obtained item: {item.name} - {item.description}")
+
+    def equip_item(self):
+        equipables = [item for item in self.inventory if isinstance(item, Equipable)]
+        if not equipables:
+            print("You have no equipment to equip.")
+            return
+
+        print("\nChoose equipment to equip:")
+        for i, item in enumerate(equipables):
+            print(f"{i+1}. {item.name} - {item.description}")
+
+        choice = input("Enter number: ")
+        if choice.isdigit():
+            idx = int(choice) - 1
+            if 0 <= idx < len(equipables):
+                item = equipables[idx]
+                if item.type == "weapon":
+                    self.equipped_weapon = item
+                    self.damage = 5 + item.bonus
+                    print(f"You equipped {item.name}. Damage increased to {self.damage}")
+                elif item.type == "armour":
+                    self.equipped_armour = item
+                    print(f"You equipped {item.name}. Armour bonus: {item.bonus}")
+
+    def use_items(self):
+        if not self.inventory:
+            print("You have no items!")
+            return False
+
+        usable_items = [item for item in self.inventory if isinstance(item, Usable) and item.unused()]
+        if not usable_items:
+            print("You have no usable items left!")
+            return False
+
+        print("\nChoose an item to use:")
+        for i, item in enumerate(usable_items):
+            print(f"{i+1}. {item.name} - {item.description}")
+
+        choice = input("Enter the number of the item: ")
+        if choice.isdigit():
+            idx = int(choice) - 1
+            if 0 <= idx < len(usable_items):
+                item = usable_items[idx]
+                print(f"You used {item.name}!")
+                if item.name == "Health Potion":
+                    heal_amount = 10
+                    player.hp = min(player.max_hp, player.hp + heal_amount)
+                    print(f"You healed {heal_amount} HP! Current HP: {player.hp}/{player.max_hp}")
+                item.used -= 1
+                return True
+
+        print("Invalid choice.")
+        return False
+
+    def Find_target(self):
+        print(f"what enemy do you wamt to attack using {self}")
+        for enemy in enemy_list:
+            print(f"{enemy} {enemy_list.index}")
+        target=input()
+        self.Attack(self,target)
+
+
+
+
+
+# --- Item klasserna ---
+
+class Item:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+class Usable(Item):
+    def __init__(self, name, description, used):
+        super().__init__(name, description)
+        self.used = used
+
+    def unused(self):
+        return self.used > 0
+
+class Equipable(Item):
+    def __init__(self, name, description, type, bonus):
+        super().__init__(name, description)
+        self.type = type  # vapen och rustning
+        self.bonus = bonus  # Boostar skada eller dmg resistance
+
+# Weapons
+stone = Equipable("Smol stone :)", "A small, but powerfull stone (+2 damage)", "weapon", 3)
+axe = Equipable("Battle Axe", "Heavy but powerful (+5 damage)", "weapon", 5)
+
+# Armour
+helmet = Equipable("Leather Helmet", "Simple protection (+1 defense)", "armour", 1)
+chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour", 3)
+
+
+
+
+
+
+# --- Encounters ---
+enemies = []
+def Enemy_generation(amount):
+    for i in range(amount):
+        enemy_list = [Enemy("Monster rat","A big rat", '''       ____()()
+      /      @@
+`~~~~~\\_;m__m._>o ''', 100, 5,2),
+ Enemy("Big bird","A bird of pray", '''  `-`-.
+  '( @ >
+   _) (
+  /    )
+ /_,'  / 
+   \  / 
+   m""m''', 100, 2,4)]
+        enemies.append(enemy_list[rand.randint(0, len(enemy_list)) - 1])
+def enemy_encounter(player):
+    enemy = Enemy("Rat", "A nasty rubbish-rat", "(>_<)", 15, 3, 4)
+    print("\nYou encounter an enemy!")
+    enemy.print_self()
+
+    while enemy.is_alive() and player.is_alive():
+        print("\nWhat will you do?")
+        print("1. Attack")
+        print("2. Use Item")
+        action = input("Choose an action (1 or 2): ")
+
+        if action == "1":
+            player.attack(enemy)
+        elif action == "2":
+            used = player.use_items()
+            if not used:
+                continue  # Skippar din tur om du inte har item att använda :(
+        else:
+            print("Invalid action. You hesitate...")
+            continue
+
+        if enemy.is_alive():
+            enemy.attack(player)
+
+    if player.is_alive():
+        print("You defeated the enemy!")
+        potion = Usable("Health Potion", "Restores 10 HP", 1)
+        player.add_item(potion)
+    else:
+        print("You have fallen in battle...")
+
+def npc_interaction(player):
+    print("\nYou meet a kind bird who gives you a stone!")
+    stone = Equipable("Smol stone :)", "Increases your damage by 2")
+    player.damage += 2
+    player.add_item(stone)
+
+def trap_event(player):
+    print("\n You triggered a trap! You lose 5 HP. Hehehe, you suck")
+    player.hp -= 5
+    if player.hp < 0:
+        player.hp = 0
+    print(f"Your HP is now {player.hp}/{player.max_hp}")
+
+
+
+
+
+
+
+
+# --- Hur spelet fungerar (Grenar) ---
+
+def branching_path(player):
+    while player.is_alive():
+        print("\nChoose a path:")
+        print("1. Park")
+        print("2. Streets cuh")
+        print("3. House")
+        choice = input("Enter 1, 2, or 3: ")
+
+        encounter = random.choice([enemy_encounter, npc_interaction, trap_event])
+        encounter(player)
+
+        if not player.is_alive():
+            print("\n Game Over.")
+            break
+
+        again = input("\nDo you want to keep exploring? (yes/no): ").lower()
+        if again != 'yes':
+            break
+
+
+
+
+# --- writing system ---
+
+def write(string):
+    # For-loop which writes each letter with delay
+    for cha in string:
+        print(cha,end="")
+        # Wait before repeat loop
+        time.sleep(0.05)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --- funktion för att starta spelet ---
+
+def start_game():
+    print("=== Welcome to the Adventure RPG ===")
+    name = input("Enter your cat's name: ")
+    player = Player(name)
+
+    print(f"\nWelcome, {player.name}!")
+    player.print_self()
+
+    branching_path(player)
+
+    print("\nThanks for playing!")
+
+
+start_game() #Funktionen startar spelet
+
+
+
+
+enemy1 = Enemy("Monster rat","A big rat", '''       ____()()
+      /      @@
+`~~~~~\\_;m__m._>o ''', 100, 5,2)
+
+enemy2 = Enemy("Big bird","A bird of pray", '''  `-`-.
+  '( @ >
+   _) (
+  /    )
+ /_,'  / 
+   \  / 
+   m""m''', 100, 2,4)
+
+cat = Ally("Cat","the great",'''     _
+  |\'/-..--.
+ / _ _   ,  ;
+`~=`Y'~_<._./
+ <`-....__.'  ''', 100, 6,3,1)
+
+ally1 = Ally("litll bird","A small bird",'''   ,_
+  >' )
+  ( ( \ 
+   ''|\ ''',100,2,5,1)
