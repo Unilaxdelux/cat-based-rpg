@@ -12,14 +12,15 @@ class Entity:
         self.hp = max_hp
         self.damage = damage
         self.speed = speed
+        self.dead = False
 
         def repr(self):
             return self.name
 
         def is_alive(self):
-            return self.hp > 0
+            return not self.dead
         '''
-        Checks if the entity is still alive or not
+        Returns whether that target was killed.
         '''
 
     def print_self(self):
@@ -30,33 +31,71 @@ class Entity:
         print(f"Damge: {self.damage}")
 
 
-    def attack(self, target):
-        target.hp -= self.damage
-        if target.hp < 0:
-            target.hp = 0
-        print(f"{self.name} attacked {target.name}, dealing {self.damage} damage!")
-        print(f"{target.name}'s HP is now {target.hp}/{target.max_hp}")
+        def attack(self, target) -> bool:
+            '''
+            Attacks the target of type entity.
+            Returns whether that target was killed.
+            '''
+            target.hp -= self.damage
+            if target.hp <= 0:
+                target.hp = 0
+                target.dead = True
+            print(f"{self.name} attacked {target.name}, dealing {self.damage} damage!")
+            print(f"{target.name}'s HP is now {target.hp}/{target.max_hp}")
+        
+            return target.dead
 
 
 class Enemy(Entity):
+    def __init__ (self, name, description, image, max_hp, damage, speed):
+        super().__init__(name, description, image, max_hp, damage, speed)
     def Find_target(self):
-        target = rand.randint(0,len(ally_list)-1)
-        self.Attack(target)
+        target = ally_list[rand.randint(0,len(ally_list)-1)]
+        killed = self.attack(target)
+        if killed:
+            ally_list.remove(target)
 
 class Ally(Entity):
     def __init__(self, name, description, image, max_hp, damage, speed, level):
         super().__init__(name, description, image, max_hp, damage, speed)
         self.level = level
+    
+    def Find_target(self):
+        print(f"what do you want to do using {self}\n")
+        self.print_self()
+        print("\nWhat will you do?")
+        print("1. Attack")
+        print("2. Use Item")
+        action = input("Choose an action (1 or 2): ")
 
+        if action == "1":
+            print("what enemy do you want to attack\n")
+            i = 1
+            for enemy in enemy_list:
+            
+                print(f"{i}: {enemy.name}")
+                i+= 1
+            index = int(input()) - 1
+            target = enemy_list[index]
 
+            killed = self.attack(target)
+            if killed:
+                enemy_list.remove(target)
+         elif action == "2":
+            used = self.use_items()
+            if not used:
+            return  # Skippar din tur om du inte har item att anvanda :(
+        else:
+            print("Invalid action. You hesitate...")
+            return
 
 
 
 # --- Spelare klassen ---
 
-class Player(Entity):
+class Player(Ally):
     def __init__(self, name):
-        super().__init__(name, "The Hero", "(^_^)", 30, 5, 5)
+        super().__init__(name, "The Hero", "(^_^)", 30, 5, 3, 1)
         self.inventory = []
 
     def add_item(self, item):
@@ -162,43 +201,45 @@ chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour"
 
 
 # --- Encounters ---
-enemies = []
+player = Player("cat")
+ally_list = [player]
+enemy_list = []
+fight_order= []
 def Enemy_generation(amount):
     for i in range(amount):
         enemy_list = [Enemy("Monster rat","A big rat", '''       ____()()
       /      @@
-`~~~~~\\_;m__m._>o ''', 100, 5,2),
+`~~~~~\\_;m__m._>o ''', 300, 5,2),
  Enemy("Big bird","A bird of pray", '''  `-`-.
   '( @ >
    _) (
   /    )
  /_,'  / 
    \  / 
-   m""m''', 100, 2,4)]
+   m""m''', 25, 2,4)]
         enemies.append(enemy_list[rand.randint(0, len(enemy_list)) - 1])
+
+def set_figting_order():
+    global fight_order
+    fight_order = concat(enemy_list,ally_list)
+
+    fight_order.sort(key=lambda a: a.speed)
+    fight_order = fight_order[::-1]
+
 def enemy_encounter(player):
-    enemy = Enemy("Rat", "A nasty rubbish-rat", "(>_<)", 15, 3, 4)
+    enemy_generation(2)
     print("\nYou encounter an enemy!")
-    enemy.print_self()
+    for enemy in enemy_list:
+        enemy.print_self()
+    set_figting_order()
+    print("figting order:")
+    print(fight_order)
 
-    while enemy.is_alive() and player.is_alive():
-        print("\nWhat will you do?")
-        print("1. Attack")
-        print("2. Use Item")
-        action = input("Choose an action (1 or 2): ")
-
-        if action == "1":
-            player.attack(enemy)
-        elif action == "2":
-            used = player.use_items()
-            if not used:
-                continue  # Skippar din tur om du inte har item att använda :(
-        else:
-            print("Invalid action. You hesitate...")
-            continue
-
-        if enemy.is_alive():
-            enemy.attack(player)
+    while len(enemy_list) > 0 and len(ally_list) > 0:
+        for entity in fight_order:
+            if len(enemy_list) == 0 or len(ally_list) == 0:
+                return
+            entity.Find_target()
 
     if player.is_alive():
         print("You defeated the enemy!")
@@ -208,10 +249,19 @@ def enemy_encounter(player):
         print("You have fallen in battle...")
 
 def npc_interaction(player):
+      allies = [Ally("litll bird","A small bird",'''   ,_
+>' )
+( ( \\ 
+ ''|\\ ''',20,2,5,1)]
     print("\nYou meet a kind bird who gives you a stone!")
-    stone = Equipable("Smol stone :)", "Increases your damage by 2")
-    player.damage += 2
-    player.add_item(stone)
+    choce = input("how can the bird help 1) give you a Smol ston +2dam 2) jojn your team")
+    if choce == "1":
+        stone = Equipable("Smol stone :)", "Increases your damage by 2")
+        player.damage += 2
+        player.add_item(stone)
+    else:
+        ally_list.append(allies[0])
+            print("the Smol bird jojnd your team")
 
 def trap_event(player):
     print("\n You triggered a trap! You lose 5 HP. Hehehe, you suck")
