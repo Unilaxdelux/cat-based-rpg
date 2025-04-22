@@ -276,17 +276,24 @@ def write(string):
 
 # --- funktion för att starta spelet ---
 
-def start_game():
-    print("=== Welcome to the Adventure RPG ===")
-    name = input("Enter your cat's name: ")
-    player = Player(name)
+write("=== Welcome to cat art offline ===")
+    write("\nThanks for playing!")
 
-    print(f"\nWelcome, {player.name}!")
+    #Göra console blank !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    write("The cat wakes up by the loud noices from the streets of the city, at first it feels like a completely normal morning. But something is wrong, the cat can't find it's family. It searches everywhere but can't find them. When the cat comes back home after the long search a crow sits in the little tree nearby. Someting very weird then happend, the crow talked.")
+    print("Dear cat, yes you. I have something very important to tell you. - Crow")
+    #print("") CONTINUE CONVERSASION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    name = input("Enter your cat's name:\n")
+
+    player = Player(name)
+    print(f"\nWelcome, {player.name}! Your mission is to find all the three lost pieces of the cat amullet. When the amulet is complete all the cats will return. On your journey you will have to play smart, in some situations you have to be kind, in other you have to be brave. Good luck!")
+    
+    #GÖRA console blank !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    write(f"Here are the stats for {name}:") 
     player.print_self()
 
+    write("")
     branching_path(player)
-
-    print("\nThanks for playing!")
 
 
 start_game() #Funktionen startar spelet
