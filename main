@@ -1,3 +1,4 @@
+from operator import concat
 import random as rand
 import time
 
@@ -95,7 +96,11 @@ class Ally(Entity):
 
 class Player(Ally):
     def __init__(self, name):
-        super().__init__(name, "The Hero", "(^_^)", 30, 5, 3, 1)
+        super().__init__(name, "The Hero", '''     _
+  |\'/-..--.
+ / _ _   ,  ;
+`~=`Y'~_<._./
+ <`-....__.'  ''', 30, 5, 3, 1)
         self.inventory = []
 
     def add_item(self, item):
@@ -207,7 +212,7 @@ enemy_list = []
 fight_order= []
 def Enemy_generation(amount):
     for i in range(amount):
-        enemy_list = [Enemy("Monster rat","A big rat", '''       ____()()
+        enemies = [Enemy("Monster rat","A big rat", '''       ____()()
       /      @@
 `~~~~~\\_;m__m._>o ''', 300, 5,2),
  Enemy("Big bird","A bird of pray", '''  `-`-.
@@ -217,7 +222,7 @@ def Enemy_generation(amount):
  /_,'  / 
    \  / 
    m""m''', 25, 2,4)]
-        enemies.append(enemy_list[rand.randint(0, len(enemy_list)) - 1])
+        enemy_list.append(enemies[rand.randint(0, len(enemy_list)) - 1])
 
 def set_figting_order():
     global fight_order
@@ -253,7 +258,7 @@ def npc_interaction(player):
 >' )
 ( ( \\ 
  ''|\\ ''',20,2,5,1)]
-    print("\nYou meet a kind bird who gives you a stone!")
+    print("\nYou meet a kind bird who whants to help!")
     choce = input("how can the bird help 1) give you a Smol ston +2dam 2) jojn your team")
     if choce == "1":
         stone = Equipable("Smol stone :)", "Increases your damage by 2")
@@ -326,7 +331,9 @@ def write(string):
 
 # --- funktion för att starta spelet ---
 
-write("=== Welcome to cat art offline ===")
+def start_game()
+
+    write("=== Welcome to cat art offline ===")
     write("\nThanks for playing!")
 
     #Göra console blank !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -347,29 +354,3 @@ write("=== Welcome to cat art offline ===")
 
 
 start_game() #Funktionen startar spelet
-
-
-
-
-enemy1 = Enemy("Monster rat","A big rat", '''       ____()()
-      /      @@
-`~~~~~\\_;m__m._>o ''', 100, 5,2)
-
-enemy2 = Enemy("Big bird","A bird of pray", '''  `-`-.
-  '( @ >
-   _) (
-  /    )
- /_,'  / 
-   \  / 
-   m""m''', 100, 2,4)
-
-cat = Ally("Cat","the great",'''     _
-  |\'/-..--.
- / _ _   ,  ;
-`~=`Y'~_<._./
- <`-....__.'  ''', 100, 6,3,1)
-
-ally1 = Ally("litll bird","A small bird",'''   ,_
-  >' )
-  ( ( \ 
-   ''|\ ''',100,2,5,1)
