@@ -5,7 +5,7 @@ import time
 # --- Entity klasserna (Fiende, Allierade, Spelare) ---
 
 class Entity:
-    def init(self,name,description,image, max_hp,damage,speed):
+    def __init__(self,name,description,image, max_hp,damage,speed):
         self.name = name
         self.description = description
         self.image = image
