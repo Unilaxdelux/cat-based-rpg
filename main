@@ -82,7 +82,7 @@ class Ally(Entity):
             killed = self.attack(target)
             if killed:
                 enemy_list.remove(target)
-         elif action == "2":
+        elif action == "2":
             used = self.use_items()
             if not used:
                 return  # Skippar din tur om du inte har item att anvanda :(
@@ -210,7 +210,7 @@ player = Player("cat")
 ally_list = [player]
 enemy_list = []
 fight_order= []
-def Enemy_generation(amount):
+def enemy_generation(amount):
     for i in range(amount):
         enemies = [Enemy("Monster rat","A big rat", '''       ____()()
       /      @@
@@ -254,7 +254,7 @@ def enemy_encounter(player):
         print("You have fallen in battle...")
 
 def npc_interaction(player):
-      allies = [Ally("litll bird","A small bird",'''   ,_
+    allies = [Ally("litll bird","A small bird",'''   ,_
 >' )
 ( ( \\ 
  ''|\\ ''',20,2,5,1)]
@@ -294,7 +294,7 @@ def branching_path(player, choice_1, choice_2, choice_3 = ""):
         if  not choice in [1,2,3]:
             continue
 
-        encounter = random.choice([enemy_encounter, npc_interaction, trap_event])
+        encounter = rand.choice([enemy_encounter, npc_interaction, trap_event])
         encounter(player)
 
         if not player.is_alive():
@@ -331,7 +331,7 @@ def write(string):
 
 # --- funktion för att starta spelet ---
 
-def start_game()
+def start_game():
 
     write("=== Welcome to cat art offline ===")
     write("\nThanks for playing!")
