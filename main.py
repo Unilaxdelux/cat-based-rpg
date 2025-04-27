@@ -196,8 +196,6 @@ chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour"
 
 
 
-
-
 # --- Encounters ---
 player = Player("cat")
 ally_list = [player]
@@ -246,7 +244,7 @@ def enemy_encounter(player):
     else:
         print("You have fallen in battle...")
 
-def npc_interaction(player):
+def ally_interaction(player):
     allies = [Ally("litll bird","A small bird",'''   ,_
 >' )
 ( ( \\ 
@@ -270,33 +268,52 @@ def trap_event(player):
 
 
 
+#Rooms are declared
+class Room():
+    def __init__(self, name, desc, entity_interaction = ""):
+        self.name = name
+        self.desc = desc
+        self.entity_interaction = entity_interaction
+    
+    def __repr__(self):
+        return self.name
 
+    def enter_room(self, player):
+        print(f"You have entered {self.name}. {self.desc}")
 
+        #Makes a enemy or entity appear in the room when player has entered the room
+        #self.entity_interaction.appear()
+        #Evelina: Why do we need player as an argument??????????????????????????????????????????????????
+        enemy_encounter(player)
+
+rooms = [Room("The street", "a very busy street with cars and people."), 
+         Room("The park", "it has many trees and a small lake."), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.")
+         ]
 
 
 # --- Hur spelet fungerar (Grenar) ---
-
-def branching_path(player, choice_1, choice_2, choice_3 = ""):
-    while player.is_alive():
-        print("\nChoose a path:")
+#Prints and lets the player choose where to go to next
+def road_choice(player, choice_1, choice_2, choice_3 = ""):
+    i = 0
+    while i < 1:
+        print("Where do you want to go next?")
         print(f"1. {choice_1}")
         print(f"2. {choice_2}")
         print(f"3. {choice_3}")
-        choice = int(input("Enter 1, 2, or 3: "))
-        if  not choice in [1,2,3]:
+
+        choice = int(input('''Answer with "1","2" or "3": '''))
+        if choice < 1 or choice > 3:
+            print("Invalid choice, please choose one of the oftional places to go to.")
             continue
 
-        encounter = rand.choice([enemy_encounter, npc_interaction, trap_event])
-        encounter(player)
-
-        if not player.is_alive():
-            print("\n Game Over.")
-            break
-
-        again = input("\nDo you want to keep exploring? (yes/no): ").lower()
-        if again != 'yes':
-            break
-
+        if choice == 1:
+            choice_1.enter_room(player)
+        elif choice == 2:
+            choice_2.enter_room(player)
+        else:
+            choice_3.enter_room(player)
+        i+=1
 
 
 
@@ -311,20 +328,9 @@ def write(string):
     print("")
 
 
-
-
-
-
-
-
-
-
-
-
-
 # --- funktion for att starta spelet ---
 
-def start_game():
+def start_up_game():
 
     scrole = [''' _____  _____ 
 ( ___ )( ___ )
@@ -489,8 +495,15 @@ def start_game():
     player.print_self()
 
     write("")
-    branching_path(player, "house", "park", "strreets cuh") 
 
 
-start_game() #Funktionen startar spelet
-write("\nThanks for playing!")
+# --- Main game ---
+def main_game():
+    start_up_game()
+    road_choice(player, rooms[0], rooms[1], rooms[2])
+
+
+    write("\nThanks for playing!")
+
+
+main_game()
