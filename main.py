@@ -59,6 +59,7 @@ class Enemy(Entity):
         if killed:
             ally_list.remove(target)
 
+
 class Ally(Entity):
     def __init__(self, name, description, image, max_hp, damage, speed, level):
         super().__init__(name, description, image, max_hp, damage, speed)
@@ -75,16 +76,16 @@ class Ally(Entity):
         if action == "1":
             print("what enemy do you want to attack\n")
             i = 1
-            for enemy in enemy_list:
+            for enemy in roomenemy_list:
             
                 print(f"{i}: {enemy.name}")
                 i+= 1
             index = int(input()) - 1
-            target = enemy_list[index]
+            target = roomenemy_list[index]
 
             killed = self.attack(target)
             if killed:
-                enemy_list.remove(target)
+                roomenemy_list.remove(target)
         elif action == "2":
             used = self.use_items()
             if not used:
@@ -199,31 +200,26 @@ chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour"
 # --- Encounters ---
 player = Player("cat")
 ally_list = [player]
-enemy_list = []
+roomenemy_list = []
 fight_order= []
-def enemy_generation(amount):
-    for i in range(amount):
-        enemies = [Enemy("Monster rat","A big rat", '''       ____()()
-      /      @@
-`~~~~~\\_;m__m._>o ''', 30, 5,2),
- Enemy("Big bird","A bird of pray", '''  `-`-.
-  '( @ >
-   _) (
-  /    )
- /_,'  / 
-   \\  / 
-   m""m''', 25, 2,4)]
-        enemy_list.append(enemies[rand.randint(0, len(enemy_list)) - 1])
+
+
+def enemy_generation(amount : int, options : list[Enemy]) -> None:
+
+    for _ in range(amount):
+        choice = rand.choice(options)
+        roomenemy_list.append(choice)
+
 
 def set_figting_order():
     global fight_order
-    fight_order = concat(enemy_list,ally_list)
+    fight_order = concat(roomenemy_list,ally_list)
 
     fight_order.sort(key=lambda a: a.speed)
     fight_order = fight_order[::-1]
 
-def enemy_encounter(player):
-    enemy_generation(2)
+def enemy_encounter(player,amount,enemy_list):
+    enemy_generation(amount, enemy_list)
     print("\nYou encounter an enemy!")
     for enemy in enemy_list:
         enemy.print_self()
@@ -284,7 +280,7 @@ class Room():
         #Makes a enemy or entity appear in the room when player has entered the room
         #self.entity_interaction.appear()
         #Evelina: Why do we need player as an argument??????????????????????????????????????????????????
-        enemy_encounter(player)
+        #enemy_encounter(player,2,)
 
 rooms = [Room("The street", "a very busy street with cars and people."), 
          Room("The park", "it has many trees and a small lake."), 
