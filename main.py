@@ -1,4 +1,5 @@
 
+
 from operator import concat
 import random as rand
 import time
@@ -60,6 +61,25 @@ class Enemy(Entity):
             ally_list.remove(target)
 
 
+enemy_rat = Enemy("Monster rat","A big rat", '''       ____()()
+      /      @@
+`~~~~~\\_;m__m._>o ''', 30, 5,2)
+enemy_bird = Enemy("Big bird","A bird of pray", '''  `-`-.
+  '( @ >
+   _) (
+  /    )
+ /_,'  / 
+   \\  / 
+   m""m''', 25, 2,4)
+enemy_frog = Enemy("Posion Frog","A poisonus frog",'''              _         _
+  __   ___.--'_`. 
+ ( _`.'. -   'o` )
+ _\\.'_'      _.-' 
+( \\`. )    //\\`   
+ \\_`-'`---'\\\\__,  
+  \\`        `-\\   
+   `              ''',25,3,3)
+
 class Ally(Entity):
     def __init__(self, name, description, image, max_hp, damage, speed, level):
         super().__init__(name, description, image, max_hp, damage, speed)
@@ -76,16 +96,16 @@ class Ally(Entity):
         if action == "1":
             print("what enemy do you want to attack\n")
             i = 1
-            for enemy in roomenemy_list:
+            for enemy in enemy_list:
             
-                print(f"{i}: {enemy.name}")
+                print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
                 i+= 1
             index = int(input()) - 1
-            target = roomenemy_list[index]
+            target = enemy_list[index]
 
             killed = self.attack(target)
             if killed:
-                roomenemy_list.remove(target)
+                enemy_list.remove(target)
         elif action == "2":
             used = self.use_items()
             if not used:
@@ -200,7 +220,7 @@ chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour"
 # --- Encounters ---
 player = Player("cat")
 ally_list = [player]
-roomenemy_list = []
+enemy_list = []
 fight_order= []
 
 
@@ -208,18 +228,18 @@ def enemy_generation(amount : int, options : list[Enemy]) -> None:
 
     for _ in range(amount):
         choice = rand.choice(options)
-        roomenemy_list.append(choice)
+        enemy_list.append(choice)
 
 
 def set_figting_order():
     global fight_order
-    fight_order = concat(roomenemy_list,ally_list)
+    fight_order = concat(enemy_list,ally_list)
 
     fight_order.sort(key=lambda a: a.speed)
     fight_order = fight_order[::-1]
 
-def enemy_encounter(player,amount,enemy_list):
-    enemy_generation(amount, enemy_list)
+def enemy_encounter(player,amount,options):
+    enemy_generation(amount, options)
     print("\nYou encounter an enemy!")
     for enemy in enemy_list:
         enemy.print_self()
@@ -240,7 +260,7 @@ def enemy_encounter(player,amount,enemy_list):
     else:
         print("You have fallen in battle...")
 
-def ally_interaction(player):
+def npc_interaction(player):
     allies = [Ally("litll bird","A small bird",'''   ,_
 >' )
 ( ( \\ 
@@ -266,10 +286,10 @@ def trap_event(player):
 
 #Rooms are declared
 class Room():
-    def __init__(self, name, desc, entity_interaction = ""):
+    def __init__(self, name, desc,enemy_options):
         self.name = name
         self.desc = desc
-        self.entity_interaction = entity_interaction
+        self.enemy_options = enemy_options
     
     def __repr__(self):
         return self.name
@@ -280,11 +300,11 @@ class Room():
         #Makes a enemy or entity appear in the room when player has entered the room
         #self.entity_interaction.appear()
         #Evelina: Why do we need player as an argument??????????????????????????????????????????????????
-        #enemy_encounter(player,2,)
+        enemy_encounter(player,2,self.enemy_options)
 
-rooms = [Room("The street", "a very busy street with cars and people."), 
-         Room("The park", "it has many trees and a small lake."), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.")
+rooms = [Room("The street", "a very busy street with cars and people.",[enemy_bird,enemy_rat]), 
+         Room("The park", "it has many trees and a small lake.",[enemy_bird,enemy_frog]), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[enemy_rat,enemy_bird])
          ]
 
 
@@ -495,8 +515,9 @@ def start_up_game():
 
 # --- Main game ---
 def main_game():
-    start_up_game()
-    road_choice(player, rooms[0], rooms[1], rooms[2])
+    #start_up_game()
+    while len(ally_list) > 0:
+        road_choice(player, rooms[0], rooms[1], rooms[2])
 
 
     write("\nThanks for playing!")
