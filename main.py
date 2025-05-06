@@ -4,9 +4,9 @@ import time
 from turtle import delay
 import os
 import copy
+import msvcrt
 
 # --- Entity klasserna (Fiende, Allierade, Spelare) ---
-
 class Entity:
     def __init__(self,name,description,image, max_hp,damage,speed):
         self.name = name
@@ -190,7 +190,7 @@ class Enemies():
       \\`        `-\\   
        `              ''',25,3,3)
     
-#In class you declare NPC, you can use them easily by enemies.X
+#In class you declare NPC, you can use them easily by npc.X
 class Npcs():
     bird = Npc("Little bird","A small bird",'''   ,_
 >' )
@@ -375,12 +375,11 @@ class Room():
         else:
             trap_event(player)
 
-       
-
-rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird), 
-         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
-         ]
+#In class you declare Rooms, you can use them easily by enemies.Rooms
+class Rooms():      
+    street = Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird)
+    park = Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird)
+    market_ally = Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
 
 
 # --- Hur spelet fungerar (Grenar) ---
@@ -421,6 +420,16 @@ def write(string):
         time.sleep(0.05)
     print("")
 
+# --- Clear console function ---
+#Clear console if player clicks on something
+def clear_console():
+    write("Press any button to continue...")
+
+    #Waiting for any key on keyboard to be pressed to contine
+    msvcrt.getch()
+
+    #clearing console
+    os.system('cls')
 
 # --- funktion for att starta spelet ---
 
@@ -575,27 +584,29 @@ def start_up_game():
         print(frame)
         time.sleep(0.15)
 
-    #Gora console blank !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    write("\nThe cat wakes up by the loud noices from the streets of the city, at first it feels like a completely normal morning. But something is wrong, the cat can't find it's family. It searches everywhere but can't find them. When the cat comes back home after the long search a crow sits in the little tree nearby. Someting very weird then happend, the crow talked.")
+    clear_console()
+    write("The cat wakes up by the loud noices from the streets of the city, at first it feels like a completely normal morning. But something is wrong, the cat can't find it's family. It searches everywhere but can't find them. When the cat comes back home after the long search a crow sits in the little tree nearby. Someting very weird then happend, the crow talked.")
     write("Dear cat, yes you. I have something very important to tell you. - Crow")
-    #print("") CONTINUE CONVERSASION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    clear_console()
     name = input("Enter your cat's name:\n")
 
+    clear_console()
+
     player = Player(name)
-    write(f"\nWelcome, {player.name}! Your mission is to find all the three lost pieces of the cat amullet. When the amulet is complete all the cats will return. On your journey you will have to play smart, in some situations you have to be kind, in other you have to be brave. Good luck!")
+    write(f"Welcome, {player.name}! Your mission is to find all the three lost pieces of the cat amullet. When the amulet is complete all the cats will return. On your journey you will have to play smart, in some situations you have to be kind, in other you have to be brave. Good luck!")
     
-    #GORA console blank !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    clear_console()
     write(f"Here are the stats for {name}:") 
     player.print_self()
 
-    write("")
+
 
 
 # --- Main game ---
 def main_game():
-    #start_up_game()
+    start_up_game()
     while len(ally_list) > 0:
-        road_choice(player, rooms[0], rooms[1], rooms[2])
+        road_choice(player, Rooms.street, Rooms.park,Rooms.market_ally)
 
 
     write("\nThanks for playing!")
