@@ -1,5 +1,3 @@
-
-
 from operator import concat
 import random as rand
 import time
@@ -235,7 +233,8 @@ def enemy_generation(amount : int, options : list[Enemy]) -> None:
 
     for _ in range(amount):
         choice = rand.choice(options)
-        enemy_list.append(choice)
+        copied = copy.deepcopy(choice)
+        enemy_list.append(copied)
 
 
 def set_figting_order():
@@ -297,6 +296,11 @@ class Room():
         self.name = name
         self.desc = desc
         self.enemy_options = []
+
+        #Makes copy of enemy, it is the copy that the room uses
+        for enemy in enemy_options:
+            copied = copy.deepcopy(enemy)
+            self.enemy_options.append(copied)
         
         #eventuellt change if easier method found
         for enemy in enemy_options:
