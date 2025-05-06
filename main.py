@@ -96,7 +96,8 @@ class Ally(Entity):
         print("\nWhat will you do?")
         print("1. Attack")
         print("2. Use Item")
-        action = input("Choose an action (1 or 2): ")
+        print("3. Check Stats")
+        action = input("Choose an action (1, 2 or 3): ")
 
         if action == "1":
             print("what enemy do you want to attack\n")
@@ -114,7 +115,25 @@ class Ally(Entity):
         elif action == "2":
             used = self.use_items()
             if not used:
-                return  # Skippar din tur om du inte har item att anvanda :(
+                print("\nWhat will you do?")
+            print("1. Attack")
+            print("2. Check Stats")
+            action = input("Choose an action (1 or 2): ")
+
+            if action == "1":
+                print("What enemy do you want to attack? \n")
+                i = 1
+                for enemy in enemy_list:
+                    print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
+                    i+=1
+                index = int(input()) - 1
+                target = enemy_list[index]
+
+                killed = self.attack(target)
+                if killed:
+                    enemy_list.remove(target)
+        elif action == "3":
+            self.player_stats
         else:
             print("Invalid action. You hesitate...")
             return
@@ -188,6 +207,9 @@ class Player(Ally):
 
         print("Invalid choice.")
         return False
+
+    def player_stats(self):
+        print(f"Statistics: \nDamage: {self.damage} + {Item.bonus} \nHealth: {self.hp}")
 
 
 # --- Item klasserna ---
@@ -292,12 +314,12 @@ def trap_event(player):
 
 #Rooms are declared
 class Room():
-    def __init__(self, name, desc,enemy_options,enemy_amount):
+    def __init__(self, name, desc,enemy_options, enemy_amount):
         self.name = name
         self.desc = desc
         self.enemy_options = []
         self.enemy_amount = enemy_amount
-        
+
         #Makes copy of enemy, it is the copy that the room uses
         for enemy in enemy_options:
             copied = copy.deepcopy(enemy)
