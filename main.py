@@ -62,7 +62,7 @@ class Enemy(Entity):
             ally_list.remove(target)
 
 
-#In class you declare enemies, you can use them easaliy by enemies.X
+#In class you declare enemies, you can use them easily by enemies.X
 class Enemies():
 
     rat = Enemy("Monster rat","A big rat", '''       ____()()
@@ -213,11 +213,11 @@ class Equipable(Item):
 
 # Weapons
 stone = Equipable("Smol stone :)", "A small, but powerfull stone (+2 damage)", "weapon", 2)
-axe = Equipable("Battle Axe", "Heavy but powerful (+5 damage)", "weapon", 5)
+stick = Equipable("Battle Stick", "Looks insanely cool (+5 damage)", "weapon", 5)
 
 # Armour
-helmet = Equipable("Leather Helmet", "Simple protection (+1 defense)", "armour", 1)
-chestplate = Equipable("Iron Chestplate", "Sturdy armour (+3 defense)", "armour", 3)
+hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
+Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
 
 
 
@@ -267,18 +267,18 @@ def enemy_encounter(player,amount,options):
         print("You have fallen in battle...")
 
 def npc_interaction(player):
-    allies = [Ally("litll bird","A small bird",'''   ,_
+    allies = [Ally("Little bird","A small bird",'''   ,_
 >' )
 ( ( \\ 
  ''|\\ ''',20,2,5,1)]
-    print("\nYou meet a kind bird who whants to help!")
-    choce = input("how can the bird help 1) give you a Smol ston +2dam 2) jojn your team")
-    if choce == "1":
+    print("\nYou meet a kind bird who wants to help!")
+    choice = input("how can the bird help? \n1) give you a Smol stone +2dam \n2) join your team")
+    if choice == "1":
         player.add_item(stone)
         player.equip_item()
     else:
         ally_list.append(allies[0])
-        print("the Smol bird jojnd your team")
+        print("the Smol bird joined your team")
 
 def trap_event(player):
     print("\n You triggered a trap! You lose 5 HP. Hehehe, you suck")
@@ -302,6 +302,9 @@ class Room():
             copied = copy.deepcopy(enemy)
             self.enemy_options.append(copied)
         
+        #eventuellt change if easier method found
+        for enemy in enemy_options:
+            self.enemy_options.append(copy.deepcopy(enemy))
 
     def __repr__(self):
         return self.name
