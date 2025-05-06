@@ -5,6 +5,7 @@ import random as rand
 import time
 from turtle import delay
 import os
+import copy
 
 # --- Entity klasserna (Fiende, Allierade, Spelare) ---
 
@@ -54,6 +55,8 @@ class Entity:
 class Enemy(Entity):
     def __init__ (self, name, description, image, max_hp, damage, speed):
         super().__init__(name, description, image, max_hp, damage, speed)
+
+
     def Find_target(self):
         target = ally_list[rand.randint(0,len(ally_list)-1)]
         killed = self.attack(target)
@@ -61,24 +64,28 @@ class Enemy(Entity):
             ally_list.remove(target)
 
 
-enemy_rat = Enemy("Monster rat","A big rat", '''       ____()()
-      /      @@
-`~~~~~\\_;m__m._>o ''', 30, 5,2)
-enemy_bird = Enemy("Big bird","A bird of pray", '''  `-`-.
-  '( @ >
-   _) (
-  /    )
- /_,'  / 
-   \\  / 
-   m""m''', 25, 2,4)
-enemy_frog = Enemy("Posion Frog","A poisonus frog",'''              _         _
-  __   ___.--'_`. 
- ( _`.'. -   'o` )
- _\\.'_'      _.-' 
-( \\`. )    //\\`   
- \\_`-'`---'\\\\__,  
-  \\`        `-\\   
-   `              ''',25,3,3)
+#In class you declare enemies, you can use them easaliy by enemies.X
+class Enemies():
+
+    rat = Enemy("Monster rat","A big rat", '''       ____()()
+          /      @@
+    `~~~~~\\_;m__m._>o ''', 30, 5,2)
+    bird = Enemy("Big bird","A bird of pray", '''  `-`-.
+      '( @ >
+       _) (
+      /    )
+     /_,'  / 
+       \\  / 
+       m""m''', 25, 2,4)
+    frog = Enemy("Posion Frog","A poisonus frog",'''              _         _
+      __   ___.--'_`. 
+     ( _`.'. -   'o` )
+     _\\.'_'      _.-' 
+    ( \\`. )    //\\`   
+     \\_`-'`---'\\\\__,  
+      \\`        `-\\   
+       `              ''',25,3,3)
+    
 
 class Ally(Entity):
     def __init__(self, name, description, image, max_hp, damage, speed, level):
@@ -289,8 +296,12 @@ class Room():
     def __init__(self, name, desc,enemy_options):
         self.name = name
         self.desc = desc
-        self.enemy_options = enemy_options
-    
+        self.enemy_options = []
+        
+        #eventuellt change if easier method found
+        for enemy in enemy_options:
+            self.enemy_options.append(copy.deepcopy(enemy))
+
     def __repr__(self):
         return self.name
 
@@ -302,9 +313,9 @@ class Room():
         #Evelina: Why do we need player as an argument??????????????????????????????????????????????????
         enemy_encounter(player,2,self.enemy_options)
 
-rooms = [Room("The street", "a very busy street with cars and people.",[enemy_bird,enemy_rat]), 
-         Room("The park", "it has many trees and a small lake.",[enemy_bird,enemy_frog]), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[enemy_rat,enemy_bird])
+rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]), 
+         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird])
          ]
 
 
