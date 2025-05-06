@@ -73,7 +73,8 @@ class Ally(Entity):
         print("\nWhat will you do?")
         print("1. Attack")
         print("2. Use Item")
-        action = input("Choose an action (1 or 2): ")
+        print("3. Check Stats")
+        action = input("Choose an action (1, 2 or 3): ")
 
         if action == "1":
             print("what enemy do you want to attack\n")
@@ -93,7 +94,25 @@ class Ally(Entity):
 
 
             if not used:
-                return  # Skippar din tur om du inte har item att anvanda :(
+                print("\nWhat will you do?")
+            print("1. Attack")
+            print("2. Check Stats")
+            action = input("Choose an action (1 or 2): ")
+
+            if action == "1":
+                print("What enemy do you want to attack? \n")
+                i = 1
+                for enemy in enemy_list:
+                    print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
+                    i+=1
+                index = int(input()) - 1
+                target = enemy_list[index]
+
+                killed = self.attack(target)
+                if killed:
+                    enemy_list.remove(target)
+        elif action == "3":
+            self.player_stats
         else:
             print("Invalid action. You hesitate...")
             return
@@ -248,6 +267,9 @@ class Player(Ally):
         print("Invalid choice.")
         return False
 
+    def player_stats(self):
+        print(f"Statistics: \nDamage: {self.damage} + {Item.bonus} \nHealth: {self.hp}")
+
 
 # --- Encounters ---
 player = Player("cat")
@@ -344,7 +366,7 @@ class Room():
     def enter_room(self, player):
         print(f"You have entered {self.name}. {self.desc}")
 
-        #When entering room where is a 1/3 chance of ethier enemy, npc or trap to appear
+        #When entering a room there is a 1/3 chance of either enemy, npc or trap to appear
         random_encounter = rand.randint(0,1)
         if random_encounter == 0:
             enemy_encounter(player, self.enemy_amount,self.enemy_options)
