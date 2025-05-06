@@ -6,7 +6,9 @@ import os
 import copy
 import msvcrt
 
-# --- Entity klasserna (Fiende, Allierade, Spelare) ---
+# --- Entity classes ---
+#region
+
 class Entity:
     def __init__(self,name,description,image, max_hp,damage,speed):
         self.name = name
@@ -130,9 +132,12 @@ class Npc(Ally):
     def quest(self):
         write(self.question)
         enemy_encounter(player, 1, self.quest_encounter)
- 
+
+#endregion
+
 
 # --- Item klasserna ---
+#region
 
 class Item:
     def __init__(self, name, description):
@@ -153,9 +158,13 @@ class Equipable(Item):
         super().__init__(name, description)
         self.type = type  # vapen och rustning
         self.bonus = bonus  
+#endregion
 
 
-# --- Declaration of items ---
+# --- Declaration of entites and items ---
+#region
+
+#Declaration of items
 class Items():
     # Weapons
     stone = Equipable("Smol stone :)", "A small, but powerfull stone (+2 damage)", "weapon", 2)
@@ -164,9 +173,6 @@ class Items():
     # Armour
     hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
     Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
-
-
-# --- Declaration of enemies and npc ---
 
 #In class you declare enemies, you can use them easily by enemies.X
 class Enemies():
@@ -197,6 +203,7 @@ class Npcs():
 ( ( \\ 
  ''|\\ ''',20,2,5,1, "Here is your quest, you need to ......",[Enemies.bird], Items.stone)
 
+#endregion
 
 
 # --- Spelare klassen ---
@@ -272,11 +279,11 @@ class Player(Ally):
 
 
 # --- Encounters ---
+#region
 player = Player("cat")
 ally_list = [player]
 enemy_list = []
 fight_order= []
-
 
 def enemy_generation(amount : int, options : list[Enemy]) -> None:
 
@@ -299,9 +306,12 @@ def enemy_encounter(player,amount,options):
     print("\nYou encounter an enemy!")
     for enemy in enemy_list:
         enemy.print_self()
+
     set_figting_order()
     print("figting order:")
     print(fight_order)
+
+    row_devider()
 
     while len(enemy_list) > 0 and len(ally_list) > 0:
         for entity in fight_order:
@@ -315,7 +325,6 @@ def enemy_encounter(player,amount,options):
         player.add_item(potion)
     else:
         print("You have fallen in battle...")
-
 
 # A npc appears, uses specific npc for information
 def npc_interaction(player, npc_option):
@@ -344,7 +353,11 @@ def trap_event(player):
         player.hp = 0
     print(f"Your HP is now {player.hp}/{player.max_hp}")
 
+#endregion
 
+
+# --- Rooms ---
+#region
 #Rooms are declared
 class Room():
     def __init__(self, name, desc,enemy_options, enemy_amount, npc_option):
@@ -364,7 +377,9 @@ class Room():
 
     #What happens when entering room
     def enter_room(self, player):
-        print(f"You have entered {self.name}. {self.desc}")
+        write(f"You have entered {self.name}. {self.desc}")
+
+        row_devider()
 
         #When entering a room there is a 1/3 chance of either enemy, npc or trap to appear
         random_encounter = rand.randint(0,1)
@@ -381,8 +396,13 @@ class Rooms():
     park = Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird)
     market_ally = Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
 
+#endregion
 
-# --- Hur spelet fungerar (Grenar) ---
+
+# --- How the game works functions ---
+#region
+
+# -- Branches --
 #Prints and lets the player choose where to go to next
 def road_choice(player, choice_1, choice_2, choice_3 = ""):
     i = 0
@@ -397,7 +417,7 @@ def road_choice(player, choice_1, choice_2, choice_3 = ""):
         if choice < 1 or choice > 3:
             print("Invalid choice, please choose one of the oftional places to go to.")
             continue
-
+        clear_console()
         #Entering room depending on choice
         if choice == 1:
             choice_1.enter_room(player)
@@ -407,32 +427,7 @@ def road_choice(player, choice_1, choice_2, choice_3 = ""):
             choice_3.enter_room(player)
         i+=1
 
-
-
-# --- writing system ---
-
-#Funtion like print but writes each letter with delay
-def write(string):
-    # For-loop which writes each letter with delay
-    for cha in string:
-        print(cha,end="",flush=True)
-        # Wait before repeat loop
-        time.sleep(0.05)
-    print("")
-
-# --- Clear console function ---
-#Clear console if player clicks on something
-def clear_console():
-    write("Press any button to continue...")
-
-    #Waiting for any key on keyboard to be pressed to contine
-    msvcrt.getch()
-
-    #clearing console
-    os.system('cls')
-
-# --- funktion for att starta spelet ---
-
+# -- Game startup --
 def start_up_game():
 
     scrole = [''' _____  _____ 
@@ -599,17 +594,51 @@ def start_up_game():
     write(f"Here are the stats for {name}:") 
     player.print_self()
 
+#endregion
 
+
+# --- Format/design function ---
+#region
+
+
+#Funtion like print but writes each letter with delay
+def write(string):
+    # For-loop which writes each letter with delay
+    for cha in string:
+        print(cha,end="",flush=True)
+        # Wait before repeat loop
+        time.sleep(0.05)
+    print("")
+
+# Prints a line to devide information
+def row_devider():
+    row = "-"*100
+    print(row)
+
+#Clear console if player clicks on something
+def clear_console():
+    write("Press any button to continue...")
+
+    #Waiting for any key on keyboard to be pressed to contine
+    msvcrt.getch()
+
+    #clearing console
+    os.system('cls')
+#endregion
 
 
 # --- Main game ---
+
 def main_game():
-    start_up_game()
+    #start_up_game()
+
     while len(ally_list) > 0:
         road_choice(player, Rooms.street, Rooms.park,Rooms.market_ally)
 
 
     write("\nThanks for playing!")
 
+
+#Main -----------------------------------------------------------------------------------------
 
 main_game()
