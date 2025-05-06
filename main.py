@@ -62,29 +62,6 @@ class Enemy(Entity):
             ally_list.remove(target)
 
 
-#In class you declare enemies, you can use them easily by enemies.X
-class Enemies():
-
-    rat = Enemy("Monster rat","A big rat", '''       ____()()
-          /      @@
-    `~~~~~\\_;m__m._>o ''', 30, 5,2)
-    bird = Enemy("Big bird","A bird of pray", '''  `-`-.
-      '( @ >
-       _) (
-      /    )
-     /_,'  / 
-       \\  / 
-       m""m''', 25, 2,4)
-    frog = Enemy("Posion Frog","A poisonus frog",'''              _         _
-      __   ___.--'_`. 
-     ( _`.'. -   'o` )
-     _\\.'_'      _.-' 
-    ( \\`. )    //\\`   
-     \\_`-'`---'\\\\__,  
-      \\`        `-\\   
-       `              ''',25,3,3)
-    
-
 class Ally(Entity):
     def __init__(self, name, description, image, max_hp, damage, speed, level):
         super().__init__(name, description, image, max_hp, damage, speed)
@@ -113,11 +90,93 @@ class Ally(Entity):
                 enemy_list.remove(target)
         elif action == "2":
             used = self.use_items()
+
+
             if not used:
                 return  # Skippar din tur om du inte har item att anvanda :(
         else:
             print("Invalid action. You hesitate...")
             return
+
+
+class Npc(Ally):
+    def __init__(self, name, description, image, max_hp, damage, speed, level,question, quest_encounter, reward_item):
+        super().__init__(name, description, image, max_hp, damage, speed, level)
+        self.question = question
+        self.quest_encounter = quest_encounter
+        self.reward_item = reward_item
+
+    
+    #Quest for player from npc, specific enemy encounter to get the reward item 
+    def quest(self):
+        write(self.question)
+        enemy_encounter(player, 1, self.quest_encounter)
+ 
+
+# --- Item klasserna ---
+
+class Item:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+class Usable(Item):
+    def __init__(self, name, description, used):
+        super().__init__(name, description)
+        self.used = used
+
+    def unused(self):
+        return self.used > 0
+
+# Boostar skada eller dmg resistance       
+class Equipable(Item):
+    def __init__(self, name, description, type, bonus):
+        super().__init__(name, description)
+        self.type = type  # vapen och rustning
+        self.bonus = bonus  
+
+
+# --- Declaration of items ---
+class Items():
+    # Weapons
+    stone = Equipable("Smol stone :)", "A small, but powerfull stone (+2 damage)", "weapon", 2)
+    stick = Equipable("Battle Stick", "Looks insanely cool (+5 damage)", "weapon", 5)
+
+    # Armour
+    hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
+    Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
+
+
+# --- Declaration of enemies and npc ---
+
+#In class you declare enemies, you can use them easily by enemies.X
+class Enemies():
+
+    rat = Enemy("Monster rat","A big rat", '''       ____()()
+          /      @@
+    `~~~~~\\_;m__m._>o ''', 30, 5,2)
+    bird = Enemy("Big bird","A bird of pray", '''  `-`-.
+      '( @ >
+       _) (
+      /    )
+     /_,'  / 
+       \\  / 
+       m""m''', 25, 2,4)
+    frog = Enemy("Posion Frog","A poisonus frog",'''              _         _
+      __   ___.--'_`. 
+     ( _`.'. -   'o` )
+     _\\.'_'      _.-' 
+    ( \\`. )    //\\`   
+     \\_`-'`---'\\\\__,  
+      \\`        `-\\   
+       `              ''',25,3,3)
+    
+#In class you declare NPC, you can use them easily by enemies.X
+class Npcs():
+    bird = Npc("Little bird","A small bird",'''   ,_
+>' )
+( ( \\ 
+ ''|\\ ''',20,2,5,1, "Here is your quest, you need to ......",[Enemies.bird], Items.stone)
 
 
 
@@ -190,38 +249,6 @@ class Player(Ally):
         return False
 
 
-# --- Item klasserna ---
-
-class Item:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-
-class Usable(Item):
-    def __init__(self, name, description, used):
-        super().__init__(name, description)
-        self.used = used
-
-    def unused(self):
-        return self.used > 0
-
-class Equipable(Item):
-    def __init__(self, name, description, type, bonus):
-        super().__init__(name, description)
-        self.type = type  # vapen och rustning
-        self.bonus = bonus  # Boostar skada eller dmg resistance
-
-# Weapons
-stone = Equipable("Smol stone :)", "A small, but powerfull stone (+2 damage)", "weapon", 2)
-stick = Equipable("Battle Stick", "Looks insanely cool (+5 damage)", "weapon", 5)
-
-# Armour
-hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
-Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
-
-
-
-
 # --- Encounters ---
 player = Player("cat")
 ally_list = [player]
@@ -236,7 +263,7 @@ def enemy_generation(amount : int, options : list[Enemy]) -> None:
         copied = copy.deepcopy(choice)
         enemy_list.append(copied)
 
-
+#Fighting order of entities in fight determend by thier speed
 def set_figting_order():
     global fight_order
     fight_order = concat(enemy_list,ally_list)
@@ -245,6 +272,7 @@ def set_figting_order():
     fight_order = fight_order[::-1]
 
 def enemy_encounter(player,amount,options):
+
     enemy_generation(amount, options)
     print("\nYou encounter an enemy!")
     for enemy in enemy_list:
@@ -266,20 +294,27 @@ def enemy_encounter(player,amount,options):
     else:
         print("You have fallen in battle...")
 
-def npc_interaction(player):
-    allies = [Ally("Little bird","A small bird",'''   ,_
->' )
-( ( \\ 
- ''|\\ ''',20,2,5,1)]
-    print("\nYou meet a kind bird who wants to help!")
-    choice = input("how can the bird help? \n1) give you a Smol stone +2dam \n2) join your team")
+
+# A npc appears, uses specific npc for information
+def npc_interaction(player, npc_option):
+
+    #quest started
+    npc_option.quest()
+
+    print(f"\nYou helped the kind {npc_option.name}!\n")
+    choice = input(f"How can the {npc_option.name} help? \n1) Give you a Stone (+2dmg) \n2) Join your team")
+    
+    #reward item added to inventory
     if choice == "1":
-        player.add_item(stone)
+        player.add_item(npc_option.reward_item)
         player.equip_item()
     else:
-        ally_list.append(allies[0])
-        print("the Smol bird joined your team")
 
+        #the npc becomes players ally
+        ally_list.append(npc_option)
+        print(f"the kind {npc_option.name} joined your team")
+
+#A trap appears and player loses hp
 def trap_event(player):
     print("\n You triggered a trap! You lose 5 HP. Hehehe, you suck")
     player.hp -= 5
@@ -288,45 +323,41 @@ def trap_event(player):
     print(f"Your HP is now {player.hp}/{player.max_hp}")
 
 
-
-
 #Rooms are declared
 class Room():
-    def __init__(self, name, desc,enemy_options):
+    def __init__(self, name, desc,enemy_options, enemy_amount, npc_option):
         self.name = name
         self.desc = desc
         self.enemy_options = []
+        self.enemy_amount = enemy_amount
+        self.npc_option = npc_option
 
         #Makes copy of enemy, it is the copy that the room uses
         for enemy in enemy_options:
             copied = copy.deepcopy(enemy)
             self.enemy_options.append(copied)
-        
-        #eventuellt change if easier method found
-        for enemy in enemy_options:
-            self.enemy_options.append(copy.deepcopy(enemy))
 
     def __repr__(self):
         return self.name
 
+    #What happens when entering room
     def enter_room(self, player):
         print(f"You have entered {self.name}. {self.desc}")
 
         #When entering room where is a 1/3 chance of ethier enemy, npc or trap to appear
         random_encounter = rand.randint(0,1)
         if random_encounter == 0:
-            enemy_encounter(player,6,self.enemy_options)
+            enemy_encounter(player, self.enemy_amount,self.enemy_options)
         elif random_encounter == 1:
-            npc_interaction()
+            npc_interaction(player, self.npc_option)
         else:
-            trap_event()
+            trap_event(player)
 
        
-        
 
-rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]), 
-         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird])
+rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird), 
+         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
          ]
 
 
@@ -340,11 +371,13 @@ def road_choice(player, choice_1, choice_2, choice_3 = ""):
         print(f"2. {choice_2}")
         print(f"3. {choice_3}")
 
+        #Let player choose way
         choice = int(input('''Answer with "1","2" or "3": '''))
         if choice < 1 or choice > 3:
             print("Invalid choice, please choose one of the oftional places to go to.")
             continue
 
+        #Entering room depending on choice
         if choice == 1:
             choice_1.enter_room(player)
         elif choice == 2:
@@ -357,6 +390,7 @@ def road_choice(player, choice_1, choice_2, choice_3 = ""):
 
 # --- writing system ---
 
+#Funtion like print but writes each letter with delay
 def write(string):
     # For-loop which writes each letter with delay
     for cha in string:
