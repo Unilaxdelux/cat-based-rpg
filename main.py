@@ -292,11 +292,12 @@ def trap_event(player):
 
 #Rooms are declared
 class Room():
-    def __init__(self, name, desc,enemy_options):
+    def __init__(self, name, desc,enemy_options,enemy_amount):
         self.name = name
         self.desc = desc
         self.enemy_options = []
-
+        self.enemy_amount = enemy_amount
+        
         #Makes copy of enemy, it is the copy that the room uses
         for enemy in enemy_options:
             copied = copy.deepcopy(enemy)
@@ -315,7 +316,7 @@ class Room():
         #When entering room where is a 1/3 chance of ethier enemy, npc or trap to appear
         random_encounter = rand.randint(0,1)
         if random_encounter == 0:
-            enemy_encounter(player,6,self.enemy_options)
+            enemy_encounter(player,self.enemy_amount,self.enemy_options)
         elif random_encounter == 1:
             npc_interaction()
         else:
@@ -324,9 +325,9 @@ class Room():
        
         
 
-rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]), 
-         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird])
+rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]1), 
+         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]2), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird]2)
          ]
 
 
