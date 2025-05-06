@@ -335,7 +335,7 @@ class Room():
     def enter_room(self, player):
         print(f"You have entered {self.name}. {self.desc}")
 
-        #When entering room where is a 1/3 chance of ethier enemy, npc or trap to appear
+        #When entering a room there is a 1/3 chance of either enemy, npc or trap to appear
         random_encounter = rand.randint(0,1)
         if random_encounter == 0:
             enemy_encounter(player,self.enemy_amount,self.enemy_options)
