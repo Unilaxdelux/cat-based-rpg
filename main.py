@@ -325,9 +325,9 @@ class Room():
        
         
 
-rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]1), 
-         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]2), 
-         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird]2)
+rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1), 
+         Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2), 
+         Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2)
          ]
 
 
