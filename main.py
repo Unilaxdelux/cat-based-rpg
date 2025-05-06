@@ -302,9 +302,6 @@ class Room():
             copied = copy.deepcopy(enemy)
             self.enemy_options.append(copied)
         
-        #eventuellt change if easier method found
-        for enemy in enemy_options:
-            self.enemy_options.append(copy.deepcopy(enemy))
 
     def __repr__(self):
         return self.name
