@@ -309,10 +309,17 @@ class Room():
     def enter_room(self, player):
         print(f"You have entered {self.name}. {self.desc}")
 
-        #Makes a enemy or entity appear in the room when player has entered the room
-        #self.entity_interaction.appear()
-        #Evelina: Why do we need player as an argument??????????????????????????????????????????????????
-        enemy_encounter(player,2,self.enemy_options)
+        #When entering room where is a 1/3 chance of ethier enemy, npc or trap to appear
+        random_encounter = rand.randint(0,1)
+        if random_encounter == 0:
+            enemy_encounter(player,6,self.enemy_options)
+        elif random_encounter == 1:
+            npc_interaction()
+        else:
+            trap_event()
+
+       
+        
 
 rooms = [Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat]), 
          Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog]), 
