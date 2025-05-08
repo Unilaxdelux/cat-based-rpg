@@ -70,15 +70,15 @@ class Ally(Entity):
         self.level = level
     
     def Find_target(self):
-        print(f"what do you want to do using {self}\n")
-        self.print_self()
-        print("\nWhat will you do?")
+        #print(f"what do you want to do using {self}\n")
+        #self.print_self()
+        print("What will you do?")
         print("1. Attack")
         print("2. Use Item")
-        print("3. Check Stats")
-        action = input("Choose an action (1, 2 or 3): ")
+        print("3. Check Stats and inventory")
+        action = int(input("Choose an action (1, 2 or 3): "))
 
-        if action == "1":
+        if action == 1:
             print("what enemy do you want to attack\n")
             i = 1
             for enemy in enemy_list:
@@ -91,17 +91,16 @@ class Ally(Entity):
             killed = self.attack(target)
             if killed:
                 enemy_list.remove(target)
-        elif action == "2":
+        elif action == 2:
             used = self.use_items()
 
-
             if not used:
-                print("\nWhat will you do?")
+                print("What will you do?")
             print("1. Attack")
-            print("2. Check Stats")
-            action = input("Choose an action (1 or 2): ")
+            print("2. Check Stats and inventory")
+            action = int(input("Choose an action (1 or 2): "))
 
-            if action == "1":
+            if action == 1:
                 print("What enemy do you want to attack? \n")
                 i = 1
                 for enemy in enemy_list:
@@ -113,8 +112,13 @@ class Ally(Entity):
                 killed = self.attack(target)
                 if killed:
                     enemy_list.remove(target)
-        elif action == "3":
-            self.player_stats
+        elif action == 3:
+            for ally in ally_list:
+                ally.print_self()
+
+            print("\nInventory:")
+            #Skriva ut inventory
+
         else:
             print("Invalid action. You hesitate...")
             return
@@ -209,12 +213,15 @@ class Npcs():
 # --- Spelare klassen ---
 
 class Player(Ally):
-    def __init__(self, name):
-        super().__init__(name, "The Hero", '''     _
+    symbol = '''     _
   |\'/-..--.
  / _ _   ,  ;
 `~=`Y'~_<._./
- <`-....__.'  ''', 30, 5, 3, 1)
+ <`-....__.'  '''
+
+    def __init__(self, name):
+        super().__init__(name, "The Hero", self.symbol, 30, 5, 3, 1)
+
         self.inventory = []
 
     def add_item(self, item):
@@ -238,7 +245,9 @@ class Player(Ally):
                 item = equipables[idx]
                 if item.type == "weapon":
                     self.equipped_weapon = item
-                    self.damage = 5 + item.bonus
+                    #Should 5 be here ???????????? not self.XX (or can you just have one item equipt? and therefore 5 is original dmg of player)
+                    #Changed to self.dmg + item.bonus instead of 5 + item.bonus 
+                    self.damage += item.bonus
                     print(f"You equipped {item.name}. Damage increased to {self.damage}")
                 elif item.type == "armour":
                     self.equipped_armour = item
@@ -274,6 +283,7 @@ class Player(Ally):
         print("Invalid choice.")
         return False
 
+    #What is this used for???
     def player_stats(self):
         print(f"Statistics: \nDamage: {self.damage} + {Item.bonus} \nHealth: {self.hp}")
 
@@ -352,6 +362,12 @@ def trap_event(player):
     if player.hp < 0:
         player.hp = 0
     print(f"Your HP is now {player.hp}/{player.max_hp}")
+
+#Activites and leads the player to the boss fight also incloudes the boss fight 
+def boss_active():
+    clear_console()
+    write("You have now found two of the three parts of the magical cat amulet. I believe you are now ready for the last and hardest challange. My information is that if you follow this road you may find the last piece...")
+    enemy_encounter(player,1,Enemies.rat)
 
 #endregion
 
