@@ -6,6 +6,8 @@ import os
 import copy
 import msvcrt
 
+amount_amulet = 0
+
 # --- Entity classes ---
 #region
 
@@ -173,6 +175,9 @@ class Items():
     # Armour
     hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
     Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
+
+    # Amulet
+    amulet = Equipable("Part of a magical amulet that will bring back the cats if complete", "Has no effect", "special", 0)
 
 #In class you declare enemies, you can use them easily by enemies.X
 class Enemies():
@@ -344,6 +349,9 @@ def npc_interaction(player, npc_option):
         #the npc becomes players ally
         ally_list.append(npc_option)
         print(f"the kind {npc_option.name} joined your team")
+
+    if npc_option.reward_item == Items.amulet:
+        amount_amulet += 1
 
 #A trap appears and player loses hp
 def trap_event(player):
@@ -642,3 +650,4 @@ def main_game():
 #Main -----------------------------------------------------------------------------------------
 
 main_game()
+
