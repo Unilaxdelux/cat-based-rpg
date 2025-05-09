@@ -1,3 +1,4 @@
+
 from operator import concat
 import random as rand
 import time
@@ -76,60 +77,52 @@ class Ally(Entity):
     def Find_target(self):
         #print(f"what do you want to do using {self}\n")
         #self.print_self()
-        row_devider()
-        print("What will you do?")
-        print("1. Attack")
-        print("2. Use Item")
-        print("3. Check Stats and inventory")
-        action = int(input("Choose an action (1, 2 or 3):\n "))
-        row_devider()
-
-        if action == 1:
-            index = 0
-            if len(enemy_list) > 1:
-                print("what enemy do you want to attack\n")
-                i = 1
-                for enemy in enemy_list:
-            
-                    print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
-                    i+= 1
-                index = int(input()) - 1
-            target = enemy_list[index]
-
-            killed = self.attack(target)
-            if killed:
-                enemy_list.remove(target)
-        elif action == 2:
-            used = self.use_items()
-
-            if not used:
-                print("What will you do?")
+        while True:
+            row_devider()
+            print("What will you do?")
             print("1. Attack")
-            print("2. Check Stats and inventory")
-            action = int(input("Choose an action (1 or 2): "))
+            print("2. Use Item")
+            print("3. Check Stats and inventory")
+            action = int(input("Choose an action (1, 2 or 3):\n "))
+            row_devider()
 
             if action == 1:
-                print("What enemy do you want to attack? \n")
-                i = 1
-                for enemy in enemy_list:
-                    print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
-                    i+=1
-                index = int(input()) - 1
+                index = 0
+                if len(enemy_list) > 1:
+                    print("What enemy do you want to attack\n")
+                    i = 1
+                    for enemy in enemy_list:
+                        print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
+                        i+= 1
+                    index = int(input()) - 1
                 target = enemy_list[index]
 
                 killed = self.attack(target)
                 if killed:
                     enemy_list.remove(target)
-        elif action == 3:
-            for ally in ally_list:
-                ally.print_self()
+                    print(f"You killed a {target.name}!")
 
-            print("\nInventory:")
-            #Skriva ut inventory !!!!!!!!!!!!
+                break
+            elif action == 2:
+                used = self.use_items()
 
-        else:
-            print("Invalid action. You hesitate...")
-            return
+                if not used:
+                    continue
+
+            elif action == 3:
+                for ally in ally_list:
+                    ally.print_self()
+
+                print("\nInventory:")
+                #Skriva ut inventory !!!!!!!!!!!!
+                continue
+            else:
+                print("Invalid action. You hesitate...")
+                continue
+
+            #If all enemies in room is deafeted
+            if len(enemy_list) < 1:
+                break
 
 
 #Class for Npc
@@ -685,4 +678,3 @@ def main_game():
 #Main -----------------------------------------------------------------------------------------
 
 main_game()
-
