@@ -211,6 +211,18 @@ class Enemies():
      \\_`-'`---'\\\\__,  
       \\`        `-\\   
        `              ''',25,3,3)
+    cerberus = Enemy("","",'''                            /\\_/\\____,
+              ,___/\\_/\\ \\  ~     /
+              \\     ~  \\ )   XXX
+                XXX     /    /\\_/\\___,
+                   \\o-o/-o-o/   ~    /
+                    ) /     \\    XXX
+                   _|    / \\ \\_/
+                ,-/   _  \\_/   \\
+               / (   /____,__|  )
+              (  |_ (    )  \\) _|
+             _/ _)   \\   \\__/   (_
+     b'ger  (,-(,(,(,/      \\,),),)''',80,8,2)
     
 #In class you declare NPC, you can use them easily by npc.X
 class Npcs():
@@ -425,6 +437,7 @@ class Rooms():
     street = Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird)
     park = Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird)
     market_ally = Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
+    cerberus_Room = Room("Boos Room","The",[Enemies.cerberus],1,None)
 
 #endregion
 
