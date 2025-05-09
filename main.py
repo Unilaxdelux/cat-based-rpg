@@ -125,6 +125,7 @@ class Ally(Entity):
                 break
 
 
+
 #Class for Npc
 class Npc(Ally):
     def __init__(self, name, description, image, max_hp, damage, speed, level,question, quest_encounter, reward_item):
@@ -312,7 +313,7 @@ ally_list = [player]
 enemy_list = []
 fight_order= []
 
-def enemy_generation(amount : int, options : list[Enemy]) -> None:
+def enemy_generation(amount : int, options) -> None:
 
     for _ in range(amount):
         choice = rand.choice(options)
