@@ -48,9 +48,11 @@ class Entity:
         if target.hp <= 0:
             target.hp = 0
             target.dead = True
+
+
         print(f"{self.name} attacked {target.name}, dealing {self.damage} damage!")
         print(f"{target.name}'s HP is now {target.hp}/{target.max_hp}")
-        
+        row_devider
         return target.dead
 
 
@@ -74,20 +76,24 @@ class Ally(Entity):
     def Find_target(self):
         #print(f"what do you want to do using {self}\n")
         #self.print_self()
+        row_devider()
         print("What will you do?")
         print("1. Attack")
         print("2. Use Item")
         print("3. Check Stats and inventory")
-        action = int(input("Choose an action (1, 2 or 3): "))
+        action = int(input("Choose an action (1, 2 or 3):\n "))
+        row_devider()
 
         if action == 1:
-            print("what enemy do you want to attack\n")
-            i = 1
-            for enemy in enemy_list:
+            index = 0
+            if len(enemy_list) > 1:
+                print("what enemy do you want to attack\n")
+                i = 1
+                for enemy in enemy_list:
             
-                print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
-                i+= 1
-            index = int(input()) - 1
+                    print(f"{i}: {enemy.name}: {enemy.hp}/{enemy.max_hp}")
+                    i+= 1
+                index = int(input()) - 1
             target = enemy_list[index]
 
             killed = self.attack(target)
@@ -119,13 +125,14 @@ class Ally(Entity):
                 ally.print_self()
 
             print("\nInventory:")
-            #Skriva ut inventory
+            #Skriva ut inventory !!!!!!!!!!!!
 
         else:
             print("Invalid action. You hesitate...")
             return
 
 
+#Class for Npc
 class Npc(Ally):
     def __init__(self, name, description, image, max_hp, damage, speed, level,question, quest_encounter, reward_item):
         super().__init__(name, description, image, max_hp, damage, speed, level)
@@ -318,7 +325,7 @@ def set_figting_order():
 def enemy_encounter(player,amount,options):
 
     enemy_generation(amount, options)
-    print("\nYou encounter an enemy!")
+    print("You encounter an enemy!")
     for enemy in enemy_list:
         enemy.print_self()
 
@@ -326,7 +333,6 @@ def enemy_encounter(player,amount,options):
     print("figting order:")
     print(fight_order)
 
-    row_devider()
 
     while len(enemy_list) > 0 and len(ally_list) > 0:
         for entity in fight_order:
@@ -437,7 +443,7 @@ def road_choice(player, choice_1, choice_2, choice_3 = ""):
         print(f"3. {choice_3}")
 
         #Let player choose way
-        choice = int(input('''Answer with "1","2" or "3": '''))
+        choice = int(input('''Answer with "1","2" or "3": \n'''))
         if choice < 1 or choice > 3:
             print("Invalid choice, please choose one of the oftional places to go to.")
             continue
