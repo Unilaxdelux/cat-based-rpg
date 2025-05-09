@@ -109,6 +109,7 @@ class Ally(Entity):
                         print(f"You killed a {target.name}!")
 
                     break
+
                 elif action == 2:
                     used = self.use_items()
 
@@ -159,6 +160,7 @@ class Item:
     def __init__(self, name, description):
         self.name = name
         self.description = description
+
         Item.items_rewards_list.append(self)
 
 class Usable(Item):
@@ -173,13 +175,14 @@ class Usable(Item):
 class Equipable(Item):
     def __init__(self, name, description, type, bonus):
         super().__init__(name, description)
-        self.type = type  # vapen och rustning
+        self.type = type   # vapen och rustning
         self.bonus = bonus  
         
 
 class Progress_item():
     def __init__(self, name, description):
-        super().__init__(self, name, description)
+        self.name = name
+        self.description = description
 
 
 #endregion
