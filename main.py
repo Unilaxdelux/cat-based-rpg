@@ -6,7 +6,12 @@ import os
 import copy
 import msvcrt
 
+# Globals
+
 amount_amulet = 0
+
+enemy_list = []
+fight_order= []
 
 # --- Entity classes ---
 #region
@@ -59,7 +64,7 @@ class Entity:
 class Enemy(Entity):
     def __init__ (self, name, description, image, max_hp, damage, speed):
         super().__init__(name, description, image, max_hp, damage, speed)
-
+        
 
     def Find_target(self):
         target = ally_list[rand.randint(0,len(ally_list)-1)]
@@ -120,6 +125,7 @@ class Ally(Entity):
                 killed = self.attack(target)
                 if killed:
                     enemy_list.remove(target)
+
         elif action == 3:
             for ally in ally_list:
                 ally.print_self()
@@ -153,9 +159,13 @@ class Npc(Ally):
 #region
 
 class Item:
+
+    items_rewards_list = []
+
     def __init__(self, name, description):
         self.name = name
         self.description = description
+        Item.items_rewards_list.append(self)
 
 class Usable(Item):
     def __init__(self, name, description, used):
@@ -171,6 +181,13 @@ class Equipable(Item):
         super().__init__(name, description)
         self.type = type  # vapen och rustning
         self.bonus = bonus  
+        
+
+class Progress_item():
+    def __init__(self, name, description):
+        super().__init__(self, name, description)
+
+
 #endregion
 
 
@@ -187,8 +204,12 @@ class Items():
     hat = Equipable("Smol Hat, hihi", "Simple protection (+1 defense)", "armour", 1)
     Necklace = Equipable("Magical ruby necklace", "Magical armour (+3 defense)", "armour", 3)
 
+    #Usable
+    potion = Usable("Health Potion", "Restores 10 HP", 1)
+
     # Amulet
-    amulet = Equipable("Part of a magical amulet that will bring back the cats if complete", "Has no effect", "special", 0)
+    amulet = Progress_item("Amulet part","Part of a magical amulet that will bring back the cats if complete")
+
 
 #In class you declare enemies, you can use them easily by enemies.X
 class Enemies():
@@ -268,9 +289,7 @@ class Player(Ally):
             if 0 <= idx < len(equipables):
                 item = equipables[idx]
                 if item.type == "weapon":
-                    self.equipped_weapon = item
-                    #Should 5 be here ???????????? not self.XX (or can you just have one item equipt? and therefore 5 is original dmg of player)
-                    #Changed to self.dmg + item.bonus instead of 5 + item.bonus 
+                    self.equipped_weapon = item 
                     self.damage += item.bonus
                     print(f"You equipped {item.name}. Damage increased to {self.damage}")
                 elif item.type == "armour":
@@ -311,13 +330,67 @@ class Player(Ally):
     def player_stats(self):
         print(f"Statistics: \nDamage: {self.damage} + {Item.bonus} \nHealth: {self.hp}")
 
+# --- Default settings ---
+
+#region
+player = Player("Cat")
+ally_list = [player]
+
+#endregion
+
+# --- Rooms ---
+#region
+#Rooms are declared
+class Room():
+    def __init__(self, name, desc,enemy_options, enemy_amount, npc_option):
+        self.name = name
+        self.desc = desc
+        self.enemy_options = []
+        self.enemy_amount = enemy_amount
+        self.npc_option = npc_option
+
+        #Makes copy of enemy, it is the copy that the room uses
+        for enemy in enemy_options:
+            copied = copy.deepcopy(enemy)
+            self.enemy_options.append(copied)
+
+    def __repr__(self):
+        return self.name
+
+    #What happens when entering room
+    def enter_room(self, player):
+        write(f"You have entered {self.name}. {self.desc}")
+
+        row_devider()
+
+        #When entering a the boss room the boss appears
+        if self.enemy_options == Enemies.cerberus:
+            enemy_encounter(player,1,self.enemy_options)
+        
+        #When entering a room there is a 1/3 chance of either enemy, npc or trap to appear
+        else:
+            random_encounter = rand.randint(0,1)
+            if random_encounter == 0:
+                enemy_encounter(player, self.enemy_amount,self.enemy_options)
+            elif random_encounter == 1:
+                npc_interaction(player, self.npc_option)
+            else:
+                trap_event(player)
+
+#In class you declare Rooms, you can use them easily by enemies.Rooms
+class Rooms():      
+    street = Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird)
+    park = Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird)
+    market_ally = Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
+    boss_room = Room("Boss Room","The final battle will soon take place.",[Enemies.cerberus],1,None)
+
+#endregion
+
 
 # --- Encounters ---
 #region
-player = Player("cat")
-ally_list = [player]
-enemy_list = []
-fight_order= []
+
+
 
 def enemy_generation(amount : int, options : list[Enemy]) -> None:
 
@@ -353,9 +426,10 @@ def enemy_encounter(player,amount,options):
             entity.Find_target()
 
     if player.is_alive():
-        print("You defeated the enemy!")
-        potion = Usable("Health Potion", "Restores 10 HP", 1)
-        player.add_item(potion)
+        print("You defeated all the enemies!")
+        #Gives random item from the items declared above in class Items
+        random_reward = rand.choice(Item.item_rewards_list)
+        player.add_item(random_reward)
     else:
         print("You have fallen in battle...")
 
@@ -393,51 +467,8 @@ def trap_event(player):
 def boss_active():
     clear_console()
     write("You have now found two of the three parts of the magical cat amulet. I believe you are now ready for the last and hardest challange. My information is that if you follow this road you may find the last piece...")
-    enemy_encounter(player,1,Enemies.rat)
-
-#endregion
-
-
-# --- Rooms ---
-#region
-#Rooms are declared
-class Room():
-    def __init__(self, name, desc,enemy_options, enemy_amount, npc_option):
-        self.name = name
-        self.desc = desc
-        self.enemy_options = []
-        self.enemy_amount = enemy_amount
-        self.npc_option = npc_option
-
-        #Makes copy of enemy, it is the copy that the room uses
-        for enemy in enemy_options:
-            copied = copy.deepcopy(enemy)
-            self.enemy_options.append(copied)
-
-    def __repr__(self):
-        return self.name
-
-    #What happens when entering room
-    def enter_room(self, player):
-        write(f"You have entered {self.name}. {self.desc}")
-
-        row_devider()
-
-        #When entering a room there is a 1/3 chance of either enemy, npc or trap to appear
-        random_encounter = rand.randint(0,1)
-        if random_encounter == 0:
-            enemy_encounter(player, self.enemy_amount,self.enemy_options)
-        elif random_encounter == 1:
-            npc_interaction(player, self.npc_option)
-        else:
-            trap_event(player)
-
-#In class you declare Rooms, you can use them easily by enemies.Rooms
-class Rooms():      
-    street = Room("The street", "a very busy street with cars and people.",[Enemies.bird,Enemies.rat],1, Npcs.bird)
-    park = Room("The park", "it has many trees and a small lake.",[Enemies.bird,Enemies.frog],2, Npcs.bird)
-    market_ally = Room("The market ally", "a narrow street ally with many diffrent stands selling everything you could think of. If you are lucky you may also find useful lost items.",[Enemies.rat,Enemies.bird],2, Npcs.bird)
-    cerberus_Room = Room("Boos Room","The",[Enemies.cerberus],1,None)
+    
+    Rooms.boss_room.enter_room()
 
 #endregion
 
