@@ -1,40 +1,25 @@
-
-from operator import concat
-import random as rand
-import time
-from turtle import delay
-import os
-import copy
-import msvcrt
-
-from player import *
-from utilities import *
+from entites.enemy import Enemy
+from player import Player
+from utilities import clear_console, write
 from loading_screen import LoadingScreen
-from room import Rooms
+from rooms import Rooms
 from branches import road_choice
 
 # Globals
+#region
 
 amount_amulet = 0
 
 enemy_list = []
 fight_order= []
 
-
-
-# --- Default settings ---
-
-#region
 player = Player("Cat")
 ally_list = [player]
 
 #endregion
 
-
 # --- How the game works functions ---
 #region
-
-
 
 # -- Game startup --
 def start_up_game():
@@ -58,17 +43,15 @@ def start_up_game():
 
 #endregion
 
-
 # --- Main game ---
 
 def main_game():
-    #start_up_game()
+    start_up_game()
 
     while len(ally_list) > 0:
-        road_choice(player, Rooms.street, Rooms.park ,Rooms.market_ally)
+        road_choice(player, enemy_list, ally_list, Rooms.street, Rooms.park, Rooms.market_ally)
 
     write("\nThanks for playing!")
-
 
 #Main -----------------------------------------------------------------------------------------
 

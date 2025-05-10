@@ -3,8 +3,6 @@ import time
 import os
 
 # --- Format/design function ---
-#region
-
 
 #Funtion like print but writes each letter with delay
 def write(string):
@@ -29,4 +27,3 @@ def clear_console():
 
     #clearing console
     os.system('cls')
-#endregion

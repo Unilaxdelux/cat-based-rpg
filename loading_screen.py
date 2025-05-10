@@ -1,7 +1,7 @@
 import time
 import os
 
-from utilities import *
+from utilities import write
 
 class LoadingScreen():
 

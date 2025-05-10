@@ -2,14 +2,13 @@ from operator import concat
 import random as rand
 import copy
 
-from entity import *
-from item import *
-from declarations import *
+from item import Item
+from items import Items
+from utilities import clear_console, write
 
 # --- Encounters ---
-#region
 
-def enemy_generation(amount : int, options : list[Enemy], enemy_list) -> None:
+def enemy_generation(amount : int, options, enemy_list) -> None:
 
     for _ in range(amount):
         choice = rand.choice(options)
@@ -26,13 +25,13 @@ def set_figting_order(enemy_list, ally_list):
 
 def enemy_encounter(player,amount,options, enemy_list, ally_list):
 
-    enemy_generation(amount, options)
+    enemy_generation(amount, options, enemy_list)
     print("You encounter an enemy!")
     for enemy in enemy_list:
         enemy.print_self()
 
-    set_figting_order()
-    print("figting order:")
+    set_figting_order(enemy_list, ally_list)
+    print("Figting order:")
     print(fight_order)
 
 
@@ -40,21 +39,22 @@ def enemy_encounter(player,amount,options, enemy_list, ally_list):
         for entity in fight_order:
             if len(enemy_list) == 0 or len(ally_list) == 0:
                 return
-            entity.Find_target()
+            entity.Find_target(enemy_list, ally_list)
 
     if player.is_alive():
         print("You defeated all the enemies!")
         #Gives random item from the items declared above in class Items
-        random_reward = rand.choice(Item.item_rewards_list)
+        random_reward = rand.choice(Item.items_rewards_list)
         player.add_item(random_reward)
     else:
         print("You have fallen in battle...")
 
 # A npc appears, uses specific npc for information
-def npc_interaction(player, npc_option, ally_list):
+def npc_interaction(player, npc_option, enemy_list, ally_list):
 
-    #quest started
-    npc_option.quest()
+    #Quest for player from npc, specific enemy encounter to get the reward item 
+    write(npc_option.question)
+    enemy_encounter(player, 1, npc_option.quest_encounter, enemy_list, ally_list)
 
     print(f"\nYou helped the kind {npc_option.name}!\n")
     choice = input(f"How can the {npc_option.name} help? \n1) Give you a Stone (+2dmg) \n2) Join your team")
@@ -85,6 +85,4 @@ def boss_active():
     clear_console()
     write("You have now found two of the three parts of the magical cat amulet. I believe you are now ready for the last and hardest challange. My information is that if you follow this road you may find the last piece...")
     
-    Rooms.boss_room.enter_room()
-
-#endregion
+    #Rooms.boss_room.enter_room()

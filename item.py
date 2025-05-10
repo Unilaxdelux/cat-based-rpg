@@ -1,15 +1,12 @@
-# --- Item klasserna ---
-#region
-
 class Item:
 
     items_rewards_list = []
 
-    def __init__(self, name, description):
+    def __init__(self, name, description, isReward = True):
         self.name = name
         self.description = description
-
-        Item.items_rewards_list.append(self)
+        if isReward == True:
+            Item.items_rewards_list.append(self)
 
 class Usable(Item):
     def __init__(self, name, description, used):
@@ -27,10 +24,6 @@ class Equipable(Item):
         self.bonus = bonus  
         
 
-class Progress_item():
+class Progress_item(Item):
     def __init__(self, name, description):
-        self.name = name
-        self.description = description
-
-
-#endregion
+        super().__init__(name, description, False)
