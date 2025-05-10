@@ -45,7 +45,9 @@ def enemy_encounter(player,amount,options, enemy_list, ally_list):
         print("You defeated all the enemies!")
         #Gives random item from the items declared above in class Items
         random_reward = rand.choice(Item.items_rewards_list)
-        player.add_item(random_reward)
+        # Create a copy of the randomized reward
+        copy_random_reward = copy.deepcopy(random_reward)
+        player.add_item(copy_random_reward)
     else:
         print("You have fallen in battle...")
 
